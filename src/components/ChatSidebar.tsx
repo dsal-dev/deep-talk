@@ -14,6 +14,9 @@ import {
   Sidebar as SidebarPrimitive,
 } from "~/components/ui/sidebar";
 import { useTheme } from "./ThemeProvider";
+import { useLiveQuery } from "dexie-react-hooks";
+import { db } from "~/lib/dexie";
+import { Link } from "react-router";
 
 const chatGroups = [
   { id: "1", name: "React Basics" },
@@ -35,6 +38,8 @@ export const ChatSidebar = () => {
     }
   };
 
+  const threads = useLiveQuery(() => db.getAllThreads(), []);
+
   return (
     <SidebarPrimitive>
       <SidebarHeader>
@@ -48,14 +53,16 @@ export const ChatSidebar = () => {
           <SidebarGroupContent>
             <SidebarGroupLabel>Recent Chats</SidebarGroupLabel>
             <SidebarMenu>
-              {chatGroups.map((chat) => (
-                <SidebarMenuItem key={chat.id}>
-                  <SidebarMenuButton
-                    onClick={() => setActiveChat(chat.id)}
-                    isActive={activeChat === chat.id}
-                  >
-                    {chat.name}
-                  </SidebarMenuButton>
+              {threads?.map((thread) => (
+                <SidebarMenuItem key={thread.id}>
+                  <Link to={`/thread/${thread.id}`}>
+                    <SidebarMenuButton
+                      onClick={() => setActiveChat(thread.id)}
+                      isActive={activeChat === thread.id}
+                    >
+                      {thread.title}
+                    </SidebarMenuButton>
+                  </Link>
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
