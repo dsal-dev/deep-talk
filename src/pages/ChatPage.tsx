@@ -122,18 +122,11 @@ const ChatPage = () => {
 
           <div ref={scrollToBottomRef}></div>
         </div>
-        <Button
-          onClick={handleScrollToBottom}
-          variant="secondary"
-          className="sticky bottom-0 right-0"
-        >
-          Scroll to bottom
-        </Button>
       </main>
       <footer className="border-t p-4">
         <div className="max-w-3xl mx-auto flex gap-2">
           <Textarea
-            className="flex-1"
+            className="flex-1 text-3xl font-medium"
             placeholder="Type your message here..."
             rows={5}
             onChange={handleTextareaChange}

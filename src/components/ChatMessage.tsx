@@ -1,4 +1,6 @@
+import { cn } from "~/lib/utils";
 import { ThoughtMessage } from "./ThoughtMessage";
+import ReactMarkdown from "react-markdown";
 
 interface ChatMessageProps {
   role: "user" | "assistant";
@@ -7,23 +9,27 @@ interface ChatMessageProps {
 }
 
 export const ChatMessage = (props: ChatMessageProps) => {
+  const isAssistant = props.role === "assistant";
+
   return (
     <>
       {props.thought && <ThoughtMessage thought={props.thought} />}
 
       <div
         className={`flex items-start gap-4 ${
-          props.role === "assistant" ? "flex-row" : "flex-row-reverse"
+          isAssistant ? "flex-row" : "flex-row-reverse"
         }`}
       >
         <div
           className={`rounded-lg p-4 max-w-[80%] ${
-            props.role === "assistant"
+            isAssistant
               ? "bg-secondary"
               : "bg-primary text-primary-foreground"
           }`}
         >
-          <p className="whitespace-pre-wrap">{props.content.trim()}</p>
+          <ReactMarkdown className={cn(isAssistant && "prose dark:prose-invert")}>
+            {props.content.trim()}
+          </ReactMarkdown>
         </div>
       </div>
     </>

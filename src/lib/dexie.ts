@@ -28,12 +28,12 @@ class ChatDB extends Dexie {
       threads: "id, title, created_at, updated_at",
     });
 
-    this.threads.hook("creating", (key, obj) => {
+    this.threads.hook("creating", (_key, obj) => {
       obj.created_at = new Date();
       obj.updated_at = new Date();
     });
 
-    this.messages.hook("creating", (key, obj) => {
+    this.messages.hook("creating", (_key, obj) => {
       obj.created_at = new Date();
     });
   }
@@ -41,26 +41,39 @@ class ChatDB extends Dexie {
   async createThread(title: string) {
     const id = crypto.randomUUID();
 
-    return this.threads.add({
+    await this.threads.add({
       id,
       title,
       created_at: new Date(),
       updated_at: new Date(),
     });
+
+    return id
   }
 
   async getAllThreads() {
-    return this.threads.orderBy("updated_at").toArray();
+    return this.threads.reverse().sortBy("updated_at");
   }
 
   async createMessage(
     message: Pick<DEX_Message, "role" | "content" | "threadId" | "thought">
   ) {
-    return this.messages.add({
-      ...message,
-      id: crypto.randomUUID(),
-      created_at: new Date(),
-    });
+    const messageId = crypto.randomUUID();
+
+    await this.transaction("rw", [this.messages, this.threads], async () => {
+      await this.messages.add({
+        ...message,
+        id: messageId,
+        created_at: new Date(),
+      });
+
+      await this.threads.update(message.threadId, {
+        updated_at: new Date(),
+      });
+
+    })
+
+    return messageId
   }
 
   async getMessagesForThread(threadId: string) {
