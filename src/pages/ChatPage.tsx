@@ -8,6 +8,8 @@ import { Button } from "~/components/ui/button";
 import { Textarea } from "~/components/ui/textarea";
 import { db } from "~/lib/dexie";
 
+const model: string = import.meta.env.VITE_MODEL || "";
+
 const ChatPage = () => {
   const [textInput, setTextInput] = useState("");
   const [streamedThought, setStreamedThought] = useState("");
@@ -33,7 +35,7 @@ const ChatPage = () => {
     setTextInput("");
 
     const stream = await ollama.chat({
-      model: "deepseek-r1:1.5b",
+      model: model,
       messages: [
         {
           role: "user",
